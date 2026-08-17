@@ -349,7 +349,10 @@ class PenyeederJenisGelar extends Seeder
         ];
 
         foreach ($daftarGelar as $gelar) {
-            JenisGelar::create(array_merge($gelar, ['aktif' => true]));
+            JenisGelar::updateOrCreate(
+                ['kode' => $gelar['kode']],
+                array_merge($gelar, ['aktif' => true])
+            );
         }
     }
 }

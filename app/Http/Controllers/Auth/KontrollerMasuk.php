@@ -27,7 +27,7 @@ class KontrollerMasuk extends Controller
             $request->session()->regenerate();
             $pengguna = Auth::user();
 
-            if (!$pengguna->is_active) {
+            if (!$pengguna->aktif) {
                 Auth::logout();
                 return back()->withErrors(['email' => 'Akun Anda tidak aktif. Hubungi admin.']);
             }

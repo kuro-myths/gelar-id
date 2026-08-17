@@ -128,10 +128,14 @@ class KontrollerBeranda extends Controller
 
     public function kelas()
     {
+        $jalur = request('jalur', 'semua');
+
         $kelasDaftar = Kelas::with('pengajar')->aktif()
             ->when(request('tingkat'), fn($q) => $q->where('tingkat', request('tingkat')))
             ->when(request('cari'), fn($q) => $q->where('nama', 'like', '%'.request('cari').'%'))
             ->when(request('gratis'), fn($q) => $q->where('jalur_gratis', true))
+            ->when($jalur === 'sekolah', fn($q) => $q->whereIn('tingkat', ['sd','smp','sma']))
+            ->when($jalur === 'kuliah', fn($q) => $q->where('tingkat', 'umum'))
             ->orderByDesc('unggulan')
             ->paginate(12);
 

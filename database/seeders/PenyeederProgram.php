@@ -155,23 +155,26 @@ class PenyeederProgram extends Seeder
             $jenisGelar = JenisGelar::where('kode', $data['gelar'])->first();
             if (!$jenisGelar) continue;
 
-            Program::create([
-                'jenis_gelar_id' => $jenisGelar->id,
-                'nama'           => $data['nama'],
-                'slug'           => Str::slug($data['nama']),
-                'deskripsi'      => $data['deskripsi'],
-                'kurikulum'      => $data['kurikulum'],
-                'tujuan'         => $data['tujuan'],
-                'harga'          => $data['harga'],
-                'harga_coret'    => $data['harga_coret'],
-                'unggulan'       => $data['unggulan'],
-                'label_badge'    => $data['label_badge'] ?? null,
-                'warna_badge'    => $data['warna_badge'] ?? null,
-                'jalur_gratis'   => $data['jalur_gratis'],
-                'syarat_gratis'  => $data['syarat_gratis'],
-                'maks_peserta'   => 0,
-                'aktif'          => true,
-            ]);
+            Program::updateOrCreate(
+                ['nama' => $data['nama'], 'jenis_gelar_id' => $jenisGelar->id],
+                [
+                    'jenis_gelar_id' => $jenisGelar->id,
+                    'nama'           => $data['nama'],
+                    'slug'           => \Illuminate\Support\Str::slug($data['nama']),
+                    'deskripsi'      => $data['deskripsi'],
+                    'kurikulum'      => $data['kurikulum'],
+                    'tujuan'         => $data['tujuan'],
+                    'harga'          => $data['harga'],
+                    'harga_coret'    => $data['harga_coret'],
+                    'unggulan'       => $data['unggulan'],
+                    'label_badge'    => $data['label_badge'] ?? null,
+                    'warna_badge'    => $data['warna_badge'] ?? null,
+                    'jalur_gratis'   => $data['jalur_gratis'],
+                    'syarat_gratis'  => $data['syarat_gratis'],
+                    'maks_peserta'   => 0,
+                    'aktif'          => true,
+                ]
+            );
         }
     }
 }

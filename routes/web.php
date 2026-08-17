@@ -13,6 +13,9 @@ use App\Http\Controllers\Admin\KontrollerKuesioner as KuesionerAdmin;
 use App\Http\Controllers\Admin\KontrollerSemester;
 use App\Http\Controllers\Admin\KontrollerDiskon;
 
+use App\Http\Controllers\KontrollerAnalisisMinat;
+use App\Http\Controllers\KontrollerAI;
+
 // ============ PUBLIK ============
 Route::get('/', [KontrollerBeranda::class, 'index'])->name('beranda');
 Route::get('/program', [KontrollerBeranda::class, 'program'])->name('program');
@@ -40,8 +43,15 @@ Route::middleware('guest')->group(function () {
     Route::post('/masuk', [KontrollerMasuk::class, 'masuk']);
     Route::get('/daftar', [KontrollerDaftar::class, 'tampilFormDaftar'])->name('daftar');
     Route::post('/daftar', [KontrollerDaftar::class, 'daftar']);
+    // Google OAuth
+    Route::get('/auth/google', [\App\Http\Controllers\Auth\KontrollerGoogle::class, 'redirect'])->name('auth.google');
+    Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\KontrollerGoogle::class, 'callback'])->name('auth.google.callback');
 });
 Route::post('/keluar', [KontrollerMasuk::class, 'keluar'])->name('keluar')->middleware('auth');
+
+// ============ AI ============
+Route::post('/ai/chat', [KontrollerAI::class, 'chat'])->name('ai.chat');
+Route::post('/onboarding/selesai', [KontrollerAI::class, 'selesaikanOnboarding'])->name('onboarding.selesai');
 
 // ============ PENGGUNA ============
 Route::middleware('auth')->prefix('pengguna')->name('pengguna.')->group(function () {

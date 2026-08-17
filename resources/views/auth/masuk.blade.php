@@ -49,7 +49,15 @@
                 <a href="/daftar" class="text-[#f72585] font-black hover:underline">Daftar GRATIS!</a>
             </p>
 
-            <div class="mt-5 pt-5 border-t-2 border-gray-100 text-center">
+            <div class="mt-5 pt-5 border-t-2 border-gray-100">
+                <p class="text-center text-xs font-black text-gray-400 mb-3 uppercase">Atau masuk dengan</p>
+                <a href="/auth/google" class="btn-komik w-full py-3 bg-white text-[#0f0e17] rounded-xl text-sm flex items-center justify-center gap-3 hover:bg-gray-50">
+                    <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.2 0 5.9 1.1 8.1 2.9l6-6C34.5 3.2 29.6 1 24 1 14.6 1 6.6 6.7 2.9 14.9l7 5.4C11.6 13.8 17.3 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.8c4.3-4 6.8-9.9 7.2-17z"/><path fill="#FBBC05" d="M9.9 28.6A14.9 14.9 0 0 1 9.5 24c0-1.6.3-3.1.7-4.5l-7-5.4A23.5 23.5 0 0 0 .5 24c0 3.8.9 7.4 2.5 10.6l6.9-6z"/><path fill="#34A853" d="M24 47c5.7 0 10.5-1.9 14-5.1l-7.4-5.8c-1.9 1.3-4.3 2-6.6 2-5.7 0-10.5-3.8-12.3-9l-7 5.4C7 42.1 15 47 24 47z"/></svg>
+                    Lanjutkan dengan Google
+                </a>
+            </div>
+
+            <div class="mt-4 pt-4 border-t-2 border-gray-100 text-center">
                 <p class="text-xs font-black text-gray-400 mb-2 uppercase">🔑 Akun Demo</p>
                 <p class="text-xs font-bold text-gray-500">Admin: <code class="bg-gray-100 px-2 py-0.5 rounded font-mono">admin@gelar.test</code> / <code class="bg-gray-100 px-2 py-0.5 rounded font-mono">admin123</code></p>
                 <p class="text-xs font-bold text-gray-500 mt-1">User: <code class="bg-gray-100 px-2 py-0.5 rounded font-mono">budi@contoh.com</code> / <code class="bg-gray-100 px-2 py-0.5 rounded font-mono">password</code></p>
