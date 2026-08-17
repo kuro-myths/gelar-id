@@ -1,0 +1,159 @@
+{
+  "_petunjuk": [
+    "=============================================================",
+    "FILE INI ADALAH KONFIGURASI MCP UNTUK PROJECT GELAR",
+    "=============================================================",
+    "Cara pakai:",
+    "1. Salin file ini ke: C:\\Users\\rizki\\.kiro\\settings\\mcp.json",
+    "2. Isi token/kredensial yang bertanda GANTI_...",
+    "3. Aktifkan server yang dibutuhkan: ubah 'disabled' dari true ke false",
+    "4. Restart Kiro — server MCP akan muncul di panel MCP",
+    "=============================================================",
+    "Prasyarat: install 'uv' dulu via pip install uv",
+    "uvx akan otomatis download server saat pertama kali dipakai",
+    "============================================================="
+  ],
+
+  "mcpServers": {
+
+    "github": {
+      "command": "uvx",
+      "args": ["mcp-server-github@latest"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "GANTI_DENGAN_TOKEN_GITHUB_KAMU"
+      },
+      "disabled": true,
+      "_keterangan": [
+        "Integrasi GitHub — buat issue, PR, kelola branch, baca repo",
+        "Cara dapat token: https://github.com/settings/tokens",
+        "Centang scope: repo, read:org, read:user"
+      ]
+    },
+
+    "mysql": {
+      "command": "uvx",
+      "args": ["mcp-server-mysql@latest"],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "",
+        "MYSQL_DATABASE": "gelar"
+      },
+      "disabled": false,
+      "_keterangan": [
+        "MySQL/MariaDB — Kiro bisa query database langsung",
+        "Sesuaikan MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE dengan .env project",
+        "Sudah diaktifkan (disabled: false) karena project ini pakai MySQL di Laragon"
+      ]
+    },
+
+    "postgres": {
+      "command": "uvx",
+      "args": ["mcp-server-postgres@latest"],
+      "env": {
+        "DATABASE_URL": "postgresql://username:password@localhost:5432/gelar"
+      },
+      "disabled": true,
+      "_keterangan": [
+        "PostgreSQL — aktifkan jika project beralih ke PostgreSQL",
+        "Isi DATABASE_URL dengan koneksi yang benar"
+      ]
+    },
+
+    "sqlite": {
+      "command": "uvx",
+      "args": ["mcp-server-sqlite@latest", "--db-path", "c:/laragon/www/gelar/database/database.sqlite"],
+      "disabled": false,
+      "_keterangan": [
+        "SQLite — untuk testing atau database lokal ringan",
+        "Project ini sudah punya database.sqlite di database/",
+        "Berguna saat testing tanpa MySQL"
+      ]
+    },
+
+    "filesystem": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-filesystem@latest",
+        "c:/laragon/www/gelar"
+      ],
+      "disabled": false,
+      "_keterangan": [
+        "Akses file workspace via MCP — membaca/menulis file project",
+        "Path sudah dikunci ke folder project gelar saja"
+      ]
+    },
+
+    "git": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-git@latest",
+        "--repository", "c:/laragon/www/gelar"
+      ],
+      "disabled": false,
+      "_keterangan": [
+        "Git MCP — commit, branch, diff, log, status langsung dari Kiro",
+        "Tidak perlu buka terminal manual untuk operasi git umum"
+      ]
+    },
+
+    "memory": {
+      "command": "uvx",
+      "args": ["mcp-server-memory@latest"],
+      "disabled": false,
+      "_keterangan": [
+        "Memory — Kiro menyimpan konteks antar sesi",
+        "Berguna untuk mengingat keputusan arsitektur, konvensi custom, dll",
+        "Data tersimpan lokal di komputer kamu"
+      ]
+    },
+
+    "sequential-thinking": {
+      "command": "uvx",
+      "args": ["mcp-server-sequential-thinking@latest"],
+      "disabled": false,
+      "_keterangan": [
+        "Sequential Thinking — membantu Kiro berpikir bertahap",
+        "Aktif untuk masalah kompleks multi-langkah",
+        "Tidak butuh konfigurasi tambahan"
+      ]
+    },
+
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch@latest"],
+      "disabled": false,
+      "_keterangan": [
+        "Fetch — ambil konten dari URL apapun",
+        "Berguna untuk baca dokumentasi library, cek API response",
+        "Tidak butuh konfigurasi tambahan"
+      ]
+    },
+
+    "brave-search": {
+      "command": "uvx",
+      "args": ["mcp-server-brave-search@latest"],
+      "env": {
+        "BRAVE_API_KEY": "GANTI_DENGAN_API_KEY_BRAVE"
+      },
+      "disabled": true,
+      "_keterangan": [
+        "Brave Search — pencarian web lebih akurat via Brave API",
+        "Gratis sampai 2000 query/bulan",
+        "Daftar di: https://api.search.brave.com/app/keys"
+      ]
+    },
+
+    "puppeteer": {
+      "command": "uvx",
+      "args": ["mcp-server-puppeteer@latest"],
+      "disabled": true,
+      "_keterangan": [
+        "Puppeteer — Kiro bisa screenshot halaman web, scraping, testing UI",
+        "Butuh Node.js dan Chromium terinstall",
+        "Aktifkan jika butuh testing tampilan otomatis"
+      ]
+    }
+  }
+}
