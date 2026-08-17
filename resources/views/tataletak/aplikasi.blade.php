@@ -54,12 +54,49 @@
         ::-webkit-scrollbar-thumb{background:var(--biru);border-radius:3px;}
         /* AI Chat */
         #ai-asisten{position:fixed;bottom:24px;right:24px;z-index:500;}
-        .gelembung-ai{background:white;border:3px solid var(--hitam);box-shadow:6px 6px 0 var(--hitam);border-radius:20px;width:340px;max-height:520px;display:flex;flex-direction:column;overflow:hidden;}
+        .gelembung-ai{background:white;border:3px solid var(--hitam);box-shadow:6px 6px 0 var(--hitam);border-radius:20px;width:360px;max-height:560px;display:flex;flex-direction:column;overflow:hidden;}
         .pesan-ai-masuk{background:#f0f4ff;border:2px solid #4361ee22;border-radius:12px 12px 12px 4px;padding:10px 14px;font-size:13px;font-weight:600;max-width:85%;align-self:flex-start;}
         .pesan-ai-keluar{background:var(--biru);color:white;border:2px solid var(--hitam);border-radius:12px 12px 4px 12px;padding:10px 14px;font-size:13px;font-weight:600;max-width:85%;align-self:flex-end;}
+        /* Karakter AI — crop dari strip 4 ekspresi */
+        .karakter-ai-wajah{
+            width:56px;height:56px;border-radius:50%;
+            overflow:hidden;border:3px solid var(--hitam);box-shadow:3px 3px 0 var(--hitam);
+            flex-shrink:0;background:#f0f4ff;
+        }
+        .karakter-ai-wajah img{
+            width:400%;height:100%;object-fit:cover;
+            transition:transform .3s ease;
+        }
+        /* Posisi ekspresi: normal=0, senang=25%, wow=50%, tunjuk=75% */
+        .ekspresi-0 img{transform:translateX(0%);}
+        .ekspresi-1 img{transform:translateX(-25%);}
+        .ekspresi-2 img{transform:translateX(-50%);}
+        .ekspresi-3 img{transform:translateX(-75%);}
+        /* Tombol trigger karakter */
+        .tombol-karakter{
+            position:relative;width:64px;height:64px;
+            border-radius:20px;overflow:visible;
+        }
+        .tombol-karakter-inner{
+            width:64px;height:64px;border-radius:20px;
+            border:3px solid var(--hitam);box-shadow:4px 4px 0 var(--hitam);
+            overflow:hidden;cursor:pointer;
+            transition:transform .15s ease,box-shadow .15s ease;
+            background:linear-gradient(135deg,#7209b7,#4361ee);
+        }
+        .tombol-karakter-inner:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--hitam);}
+        .tombol-karakter-inner:active{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--hitam);}
+        .tombol-karakter-inner img{width:280%;height:100%;object-fit:cover;object-position:0 0;transition:opacity .2s;}
+        .tombol-karakter .notif-dot{
+            position:absolute;top:-4px;right:-4px;
+            width:18px;height:18px;background:var(--merah);
+            border-radius:50%;border:2.5px solid white;
+            animation:denyut 1.5s ease-in-out infinite;
+        }
+        @keyframes denyut{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
         /* Onboarding */
-        #onboarding-overlay{position:fixed;inset:0;z-index:9990;background:rgba(15,14,23,.85);backdrop-filter:blur(4px);}
-        .onboarding-kartu{background:white;border:4px solid var(--hitam);box-shadow:10px 10px 0 var(--hitam);border-radius:24px;max-width:480px;width:100%;margin:auto;}
+        #onboarding-overlay{position:fixed;inset:0;z-index:9990;background:rgba(15,14,23,.9);backdrop-filter:blur(6px);}
+        .onboarding-kartu{background:white;border:4px solid var(--hitam);box-shadow:10px 10px 0 var(--hitam);border-radius:24px;max-width:540px;width:100%;margin:auto;}
         @media(max-width:768px){.kartu-komik:hover{transform:none;box-shadow:6px 6px 0 var(--hitam);}}
         [x-cloak]{display:none!important;}
     </style>
@@ -308,84 +345,201 @@
     </div>
 </footer>
 
-{{-- ===== FLOATING AI ASISTEN (Gemini) ===== --}}
+{{-- ===== FLOATING AI ASISTEN (dengan Karakter) ===== --}}
 <div id="ai-asisten" x-data="aiGemini()">
-    <div x-show="terbuka" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-90 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0 scale-90 translate-y-4" class="gelembung-ai mb-3" x-cloak>
-        <div class="bg-[#4361ee] px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-full bg-[#ffd60a] border-2 border-[#0f0e17] flex items-center justify-center text-sm font-black text-[#0f0e17]">✨</div>
+
+    {{-- Gelembung chat --}}
+    <div x-show="terbuka"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-90 translate-y-4"
+         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-end="opacity-0 scale-90 translate-y-4"
+         class="gelembung-ai mb-3" x-cloak>
+
+        {{-- Header dengan karakter --}}
+        <div class="flex items-center justify-between px-4 py-3"
+             style="background:linear-gradient(135deg,#7209b7 0%,#4361ee 100%);">
+            <div class="flex items-center gap-3">
+                {{-- Wajah karakter dengan ekspresi dinamis --}}
+                <div class="karakter-ai-wajah" :class="'ekspresi-' + ekspresi">
+                    <img src="/gambar/karakter-ekspresi.png" alt="Asisten AI" draggable="false">
+                </div>
                 <div>
-                    <p class="judul-komik text-lg text-white leading-none">ASISTEN GELAR</p>
-                    <p class="text-blue-200 text-xs font-bold" x-text="modeBertanya ? 'AI Aktif (Gemini)' : 'Tanya apapun!'"></p>
+                    <p class="judul-komik text-xl text-white leading-none tracking-wide">GELA</p>
+                    <p class="text-purple-200 text-xs font-bold" x-text="statusTeks"></p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button @click="resetChat()" title="Reset chat" class="text-blue-200 hover:text-white"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
-                <button @click="terbuka=false" class="text-white hover:text-[#ffd60a]"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button @click="resetChat()" title="Reset chat"
+                        class="text-purple-200 hover:text-white transition-colors p-1">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                </button>
+                <button @click="terbuka=false"
+                        class="text-white hover:text-[#ffd60a] transition-colors p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
         </div>
-        <div class="flex-1 overflow-y-auto p-4 space-y-3 max-h-80" id="kotak-pesan-ai">
+
+        {{-- Area pesan --}}
+        <div class="flex-1 overflow-y-auto p-4 space-y-3 max-h-72" id="kotak-pesan-ai">
             <template x-for="pesan in riwayat" :key="pesan.id">
-                <div :class="pesan.dari === 'ai' ? 'flex justify-start' : 'flex justify-end'">
-                    <div :class="pesan.dari === 'ai' ? 'pesan-ai-masuk' : 'pesan-ai-keluar'" x-html="pesan.teks"></div>
+                <div :class="pesan.dari === 'ai' ? 'flex justify-start items-end gap-2' : 'flex justify-end'">
+                    {{-- Avatar mini untuk pesan AI --}}
+                    <div x-show="pesan.dari === 'ai'"
+                         class="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#7209b7]"
+                         style="background:#f0f4ff;">
+                        <img src="/gambar/karakter-ekspresi.png" alt="AI"
+                             class="w-[400%] h-full object-cover" style="margin-left:0">
+                    </div>
+                    <div :class="pesan.dari === 'ai' ? 'pesan-ai-masuk' : 'pesan-ai-keluar'"
+                         x-html="pesan.teks"></div>
                 </div>
             </template>
-            <div x-show="mengetik" class="flex justify-start">
-                <div class="pesan-ai-masuk flex items-center gap-1">
-                    <span class="w-2 h-2 bg-[#4361ee] rounded-full animate-bounce"></span>
+            {{-- Typing indicator --}}
+            <div x-show="mengetik" class="flex justify-start items-end gap-2">
+                <div class="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#7209b7]"
+                     style="background:#f0f4ff;">
+                    <img src="/gambar/karakter-ekspresi.png" alt="AI"
+                         class="w-[400%] h-full object-cover" style="margin-left:0">
+                </div>
+                <div class="pesan-ai-masuk flex items-center gap-1.5">
+                    <span class="w-2 h-2 bg-[#7209b7] rounded-full animate-bounce"></span>
                     <span class="w-2 h-2 bg-[#4361ee] rounded-full animate-bounce" style="animation-delay:.15s"></span>
-                    <span class="w-2 h-2 bg-[#4361ee] rounded-full animate-bounce" style="animation-delay:.3s"></span>
+                    <span class="w-2 h-2 bg-[#f72585] rounded-full animate-bounce" style="animation-delay:.3s"></span>
                 </div>
             </div>
         </div>
+
+        {{-- Pertanyaan cepat --}}
         <div class="px-3 py-2 border-t border-gray-100 flex flex-wrap gap-1.5">
             <template x-for="q in pertanyaanCepat" :key="q">
-                <button @click="kirim(q)" class="text-xs px-2.5 py-1 rounded-lg border-2 border-[#4361ee] text-[#4361ee] font-bold hover:bg-[#4361ee] hover:text-white transition-all"><span x-text="q"></span></button>
+                <button @click="kirim(q)"
+                        class="text-xs px-2.5 py-1 rounded-lg border-2 border-[#7209b7] text-[#7209b7] font-bold hover:bg-[#7209b7] hover:text-white transition-all">
+                    <span x-text="q"></span>
+                </button>
             </template>
         </div>
+
+        {{-- Input --}}
         <div class="p-3 border-t-2 border-[#0f0e17] flex gap-2">
-            <input type="text" x-model="input" @keyup.enter="kirim(input)" placeholder="Tanya sesuatu..." class="flex-1 text-xs px-3 py-2 rounded-xl border-2 border-[#0f0e17] focus:outline-none focus:border-[#4361ee] font-semibold">
-            <button @click="kirim(input)" :disabled="mengetik" class="btn-komik px-3 py-2 bg-[#4361ee] text-white rounded-xl text-xs">
+            <input type="text" x-model="input"
+                   @keyup.enter="kirim(input)"
+                   @focus="ekspresi=3"
+                   @blur="ekspresi=0"
+                   placeholder="Tanya Gela sesuatu..."
+                   class="flex-1 text-xs px-3 py-2 rounded-xl border-2 border-[#0f0e17] focus:outline-none focus:border-[#7209b7] font-semibold">
+            <button @click="kirim(input)" :disabled="mengetik"
+                    class="btn-komik px-3 py-2 rounded-xl text-xs text-white"
+                    style="background:linear-gradient(135deg,#7209b7,#4361ee)">
                 <i data-lucide="send" class="w-4 h-4"></i>
             </button>
         </div>
     </div>
-    <button @click="terbuka = !terbuka" class="btn-komik w-14 h-14 rounded-2xl bg-[#4361ee] text-white flex items-center justify-center relative ml-auto">
-        <i data-lucide="bot" class="w-7 h-7" x-show="!terbuka"></i>
-        <i data-lucide="x" class="w-6 h-6" x-show="terbuka" x-cloak></i>
-        <span class="absolute -top-1 -right-1 w-4 h-4 bg-[#f72585] rounded-full border-2 border-white animate-pulse"></span>
-    </button>
+
+    {{-- Tombol toggle dengan karakter --}}
+    <div class="tombol-karakter ml-auto" @click="terbuka = !terbuka">
+        <div class="tombol-karakter-inner" x-show="!terbuka">
+            <img src="/gambar/karakter-ekspresi.png" alt="Gela AI"
+                 style="width:400%;height:100%;object-fit:cover;object-position:0 0;"
+                 draggable="false">
+        </div>
+        <div class="tombol-karakter-inner flex items-center justify-center" x-show="terbuka" x-cloak>
+            <i data-lucide="x" class="w-7 h-7 text-white"></i>
+        </div>
+        <span class="notif-dot"></span>
+    </div>
 </div>
 
-{{-- ===== ONBOARDING TOUR ===== --}}
+{{-- ===== ONBOARDING TOUR (dengan Karakter Fullbody) ===== --}}
 @auth
 @if(!session('onboarding_selesai') && !auth()->user()->isAdmin())
 <div id="onboarding-overlay" x-data="onboardingTour()" x-show="aktif" x-cloak>
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="onboarding-kartu p-8 relative">
-            {{-- Langkah progress --}}
-            <div class="flex gap-1.5 mb-6">
-                <template x-for="(l,i) in langkah" :key="i">
-                    <div class="h-1.5 rounded-full flex-1 transition-all duration-300"
-                         :class="i <= langkahAktif ? 'bg-[#4361ee]' : 'bg-gray-200'"></div>
-                </template>
-            </div>
-            {{-- Konten langkah --}}
-            <template x-for="(l,i) in langkah" :key="i">
-                <div x-show="langkahAktif === i">
-                    <div class="text-6xl mb-4 text-center" x-text="l.emoji"></div>
-                    <h3 class="judul-komik text-3xl text-[#0f0e17] text-center mb-2" x-text="l.judul"></h3>
-                    <p class="text-gray-600 font-semibold text-center leading-relaxed text-sm mb-6" x-html="l.isi"></p>
-                    {{-- Preview screenshot/ilustrasi --}}
-                    <div class="bg-[#f0f4ff] rounded-2xl p-4 border-2 border-[#e8eeff] mb-6 text-center text-sm font-bold text-gray-500" x-text="l.tip"></div>
+        <div class="onboarding-kartu relative overflow-visible">
+            <div class="flex flex-col md:flex-row">
+
+                {{-- Sisi kiri: karakter fullbody --}}
+                <div class="hidden md:flex flex-col items-center justify-end w-48 flex-shrink-0 relative"
+                     style="background:linear-gradient(180deg,#7209b722 0%,#4361ee22 100%);border-radius:24px 0 0 24px;border-right:3px solid #0f0e17;min-height:500px;">
+                    <img src="/gambar/karakter-fullbody.png"
+                         alt="Gela — Asisten GELAR.ID"
+                         class="w-full object-contain object-bottom"
+                         style="max-height:420px;filter:drop-shadow(0 0 20px #7209b755);">
+                    <div class="absolute top-4 left-0 right-0 text-center">
+                        <span class="judul-komik text-xl text-[#7209b7] tracking-widest">GELA</span>
+                        <p class="text-xs font-black text-gray-500">Asisten GELAR.ID</p>
+                    </div>
                 </div>
-            </template>
-            <div class="flex items-center justify-between">
-                <button @click="sebelumnya()" x-show="langkahAktif > 0" class="btn-komik px-4 py-2.5 bg-gray-100 text-[#0f0e17] rounded-xl text-sm">← Kembali</button>
-                <div x-show="langkahAktif === 0"></div>
-                <div class="flex gap-2">
-                    <button @click="lewati()" class="text-sm font-bold text-gray-400 hover:text-gray-600 px-3 py-2">Lewati</button>
-                    <button @click="berikutnya()" class="btn-komik px-6 py-2.5 bg-[#4361ee] text-white rounded-xl text-sm" x-text="langkahAktif === langkah.length-1 ? '🚀 Mulai Sekarang!' : 'Lanjut →'"></button>
+
+                {{-- Sisi kanan: konten tour --}}
+                <div class="flex-1 p-7 md:p-8">
+                    {{-- Header mobile: wajah mini --}}
+                    <div class="flex items-center gap-3 mb-5 md:hidden">
+                        <div class="karakter-ai-wajah ekspresi-1" style="width:52px;height:52px;">
+                            <img src="/gambar/karakter-ekspresi.png" alt="Gela">
+                        </div>
+                        <div>
+                            <p class="judul-komik text-xl text-[#7209b7]">GELA</p>
+                            <p class="text-xs font-black text-gray-500">Asisten GELAR.ID</p>
+                        </div>
+                    </div>
+
+                    {{-- Progress bar --}}
+                    <div class="flex gap-1.5 mb-6">
+                        <template x-for="(l,i) in langkah" :key="i">
+                            <div class="h-1.5 rounded-full flex-1 transition-all duration-500"
+                                 :class="i <= langkahAktif ? 'bg-[#7209b7]' : 'bg-gray-200'"></div>
+                        </template>
+                    </div>
+
+                    {{-- Konten per langkah --}}
+                    <template x-for="(l,i) in langkah" :key="i">
+                        <div x-show="langkahAktif === i"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 translate-x-4"
+                             x-transition:enter-end="opacity-100 translate-x-0">
+
+                            {{-- Nomor langkah --}}
+                            <div class="inline-flex items-center gap-2 mb-3">
+                                <span class="w-7 h-7 rounded-full bg-[#7209b7] text-white text-xs font-black flex items-center justify-center border-2 border-[#0f0e17]"
+                                      x-text="i+1"></span>
+                                <span class="text-xs font-black text-gray-400 uppercase tracking-wider"
+                                      x-text="'Langkah ' + (i+1) + ' dari ' + langkah.length"></span>
+                            </div>
+
+                            <h3 class="judul-komik text-3xl text-[#0f0e17] mb-3" x-text="l.judul"></h3>
+                            <p class="text-gray-600 font-semibold leading-relaxed text-sm mb-5" x-html="l.isi"></p>
+
+                            {{-- Tip box --}}
+                            <div class="bg-[#f0f4ff] rounded-2xl px-4 py-3 border-2 border-[#e0e7ff] mb-6 flex items-start gap-2">
+                                <span class="text-lg mt-0.5" x-text="l.ikonTip"></span>
+                                <span class="text-xs font-bold text-[#4361ee] leading-relaxed" x-text="l.tip"></span>
+                            </div>
+                        </div>
+                    </template>
+
+                    {{-- Navigasi --}}
+                    <div class="flex items-center justify-between pt-2 border-t-2 border-gray-100">
+                        <button @click="sebelumnya()"
+                                x-show="langkahAktif > 0"
+                                class="btn-komik px-4 py-2.5 bg-gray-100 text-[#0f0e17] rounded-xl text-sm">
+                            ← Kembali
+                        </button>
+                        <div x-show="langkahAktif === 0"></div>
+                        <div class="flex gap-2">
+                            <button @click="lewati()"
+                                    class="text-sm font-bold text-gray-400 hover:text-gray-600 px-3 py-2 transition-colors">
+                                Lewati
+                            </button>
+                            <button @click="berikutnya()"
+                                    class="btn-komik px-6 py-2.5 text-white rounded-xl text-sm"
+                                    style="background:linear-gradient(135deg,#7209b7,#4361ee)"
+                                    x-text="langkahAktif === langkah.length-1 ? '🚀 Mulai Belajar!' : 'Lanjut →'">
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -476,24 +630,23 @@ function aiGemini() {
         terbuka: false,
         input: '',
         mengetik: false,
-        modeBertanya: false,
-        riwayat: [{id:1, dari:'ai', teks:'👋 Halo! Saya <strong>Asisten Gelar.id</strong> — ditenagai AI. Tanya apapun tentang program, gelar, pendaftaran, atau kelas! 🎓'}],
-        pertanyaanCepat: ['Gelar apa saja?','Cara daftar?','Ada yang gratis?','Kelas SD–SMA?'],
-        konteks: `Kamu adalah asisten AI Gelar.id, platform kampus virtual Indonesia. Info penting:
-- Jenis gelar: KVT.Kom (4th/144SKS), VT.Kom (3th/120SKS), VTA.Kom (D4/108SKS), V.Com (D3/96SKS), K1-K6 (diploma 3-36 bulan)
-- K1 Literasi Digital GRATIS untuk WNI
-- Ada Kelas Pelajar untuk SD, SMP, SMA dan Kelas Kampus Virtual untuk mahasiswa
-- Login/daftar: /masuk dan /daftar, juga bisa via Google
-- Verifikasi sertifikat: /verifikasi
-- Tes minat: /analisis-minat
-Jawab dalam Bahasa Indonesia, singkat, ramah, gunakan emoji. Jika ditanya di luar topik Gelar.id, tetap bantu tapi arahkan kembali.`,
+        ekspresi: 0, // 0=normal, 1=senang, 2=wow, 3=tunjuk
+        statusTeks: 'Tanya apapun! ✨',
+        riwayat: [{
+            id: 1,
+            dari: 'ai',
+            teks: 'Hai! Saya <strong>Gela</strong>, asisten virtual GELAR.ID 🎓<br>Aku siap bantu kamu soal gelar, kelas, dan pendaftaran. Tanya apa saja!'
+        }],
+        pertanyaanCepat: ['Gelar apa saja?', 'Cara daftar?', 'Ada yang gratis?', 'Kelas SD–SMA?'],
 
         async kirim(teks) {
             if (!teks || !teks.trim() || this.mengetik) return;
             this.input = '';
-            this.riwayat.push({ id:Date.now(), dari:'user', teks: teks });
+            this.riwayat.push({ id: Date.now(), dari: 'user', teks: teks });
             this.scrollBawah();
             this.mengetik = true;
+            this.ekspresi = 2; // ekspresi "wow" saat mengetik
+            this.statusTeks = 'Gela sedang berpikir...';
 
             const apiKey = '{{ config("services.gemini.key","") }}';
 
@@ -501,51 +654,74 @@ Jawab dalam Bahasa Indonesia, singkat, ramah, gunakan emoji. Jika ditanya di lua
                 try {
                     const res = await fetch('/ai/chat', {
                         method: 'POST',
-                        headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                        },
                         body: JSON.stringify({ pesan: teks })
                     });
                     const data = await res.json();
                     this.mengetik = false;
-                    this.riwayat.push({ id:Date.now()+1, dari:'ai', teks: data.jawaban || 'Maaf, tidak bisa menjawab sekarang.' });
-                } catch(e) {
+                    this.ekspresi = 1; // ekspresi "senang" setelah jawab
+                    this.statusTeks = 'Siap membantu! 🌟';
+                    this.riwayat.push({ id: Date.now() + 1, dari: 'ai', teks: data.jawaban || 'Maaf, tidak bisa menjawab sekarang.' });
+                } catch (e) {
                     this.mengetik = false;
-                    this.riwayat.push({ id:Date.now()+1, dari:'ai', teks: this.jawabanLokal(teks) });
+                    this.ekspresi = 0;
+                    this.statusTeks = 'Tanya apapun! ✨';
+                    this.riwayat.push({ id: Date.now() + 1, dari: 'ai', teks: this.jawabanLokal(teks) });
                 }
             } else {
-                await new Promise(r => setTimeout(r, 700 + Math.random()*500));
+                await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
                 this.mengetik = false;
-                this.riwayat.push({ id:Date.now()+1, dari:'ai', teks: this.jawabanLokal(teks) });
+                const jawaban = this.jawabanLokal(teks);
+                // Pilih ekspresi sesuai sentimen jawaban
+                this.ekspresi = jawaban.includes('GRATIS') || jawaban.includes('gratis') ? 1 : 0;
+                this.statusTeks = 'Siap membantu! 🌟';
+                setTimeout(() => { this.ekspresi = 0; this.statusTeks = 'Tanya apapun! ✨'; }, 3000);
+                this.riwayat.push({ id: Date.now() + 1, dari: 'ai', teks: jawaban });
             }
             this.scrollBawah();
-            this.$nextTick(() => { if(typeof lucide!=='undefined') lucide.createIcons(); });
+            this.$nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
         },
 
         jawabanLokal(q) {
             q = q.toLowerCase();
             const kb = {
-                'gelar':'Ada <strong>10 jenis gelar</strong>: KVT.Kom, VT.Kom, VTA.Kom, V.Com, K1–K6. Cek <a href="/gelar" class="text-blue-500 underline font-bold">halaman Gelar</a> untuk detail! 🎓',
-                'cara daftar':'Mudah! Klik <a href="/daftar" class="text-blue-500 underline font-bold">Daftar Gratis</a>, isi data, pilih program, dan mulai belajar! 🚀 Bisa juga lewat Google.',
-                'gratis':'Program <strong>K1 Literasi Digital</strong> <span class="text-green-600 font-black">GRATIS</span> untuk WNI! Kelas SD–SMP tertentu juga gratis. 🆓',
-                'harga':'Mulai dari <strong>Rp 0</strong> (K1 gratis) hingga <strong>Rp 3jt/semester</strong> untuk KVT.Kom. Cek <a href="/program" class="text-blue-500 underline font-bold">Program</a>! 💰',
-                'sertifikat':'Sertifikat terbit otomatis setelah selesai, lengkap dengan kode verifikasi unik. Verifikasi di <a href="/verifikasi" class="text-blue-500 underline font-bold">/verifikasi</a>. 🏆',
-                'kelas sd':'Ada kelas SD di <a href="/kelas?jalur=sekolah&tingkat=sd" class="text-blue-500 underline font-bold">Kelas Pelajar</a> dengan materi komputer dasar yang menyenangkan! 😊',
-                'kelas smp':'Kelas SMP tersedia di <a href="/kelas?jalur=sekolah&tingkat=smp" class="text-blue-500 underline font-bold">Kelas Pelajar</a> — pemrograman dasar, desain digital, dll! 💻',
-                'kelas sma':'Kelas SMA tersedia di <a href="/kelas?jalur=sekolah&tingkat=sma" class="text-blue-500 underline font-bold">Kelas Pelajar</a> — web dev, data science dasar, dll! 🔥',
-                'pengajar':'Lihat semua pengajar berpengalaman kami di <a href="/pengajar" class="text-blue-500 underline font-bold">/pengajar</a>! 👩‍🏫',
-                'kvt':'<strong>KVT.Kom</strong> setara D4/Sarjana Terapan, 4 tahun, 144 SKS. Prospek: Software Engineer, Cyber Security! ⚡',
-                'pertemuan':'Ada fitur <strong>Pertemuan Online</strong> via Zoom/Meet/Teams. Mahasiswa bisa join langsung dari dasbor! 🎥',
-                'google':'Kamu bisa daftar/masuk menggunakan akun Google! Klik tombol <strong>"Lanjutkan dengan Google"</strong> di halaman masuk. 🔐',
+                'gelar': 'Ada <strong>10 jenis gelar</strong>: KVT.Kom, VT.Kom, VTA.Kom, V.Com, K1–K6! 🎓<br>Dari 3 bulan (K1) hingga 4 tahun (KVT.Kom). <a href="/gelar" class="text-purple-600 underline font-bold">Lihat detail →</a>',
+                'cara daftar': 'Gampang banget! 🚀<br>1. Klik <a href="/daftar" class="text-purple-600 underline font-bold">Daftar Gratis</a><br>2. Isi data atau pakai Google<br>3. Pilih program & mulai belajar!',
+                'gratis': 'Kabar baik! <span class="text-green-600 font-black">K1 Literasi Digital GRATIS</span> untuk semua WNI 🆓<br>Beberapa kelas SD–SMP juga gratis. Yuk <a href="/program?gelar=K1" class="text-purple-600 underline font-bold">ambil sekarang!</a>',
+                'harga': 'Mulai dari <strong>Rp 0</strong> (K1 gratis) hingga <strong>Rp 3jt/semester</strong> untuk KVT.Kom 💰<br><a href="/program" class="text-purple-600 underline font-bold">Lihat semua program →</a>',
+                'sertifikat': 'Sertifikat terbit <strong>otomatis</strong> setelah lulus 🏆<br>Lengkap dengan kode verifikasi unik yang bisa dicek di <a href="/verifikasi" class="text-purple-600 underline font-bold">/verifikasi</a>.',
+                'kelas sd': 'Ada kelas seru untuk SD! 🎒<br>Komputer dasar, menggambar digital, internet aman. <a href="/kelas?jalur=sekolah&tingkat=sd" class="text-purple-600 underline font-bold">Lihat kelas SD →</a>',
+                'kelas smp': 'Kelas SMP mantap banget! 💻<br>Python coding, desain poster, digital marketing dasar. <a href="/kelas?jalur=sekolah&tingkat=smp" class="text-purple-600 underline font-bold">Lihat kelas SMP →</a>',
+                'kelas sma': 'Kelas SMA super keren! 🔥<br>Web development, digital marketing, video editing. <a href="/kelas?jalur=sekolah&tingkat=sma" class="text-purple-600 underline font-bold">Lihat kelas SMA →</a>',
+                'pengajar': 'Tim pengajar kami keren-keren! 👩‍🏫<br>Praktisi aktif dari industri tech & bisnis digital Indonesia. <a href="/pengajar" class="text-purple-600 underline font-bold">Kenalan yuk →</a>',
+                'kvt': '<strong>KVT.Kom</strong> itu gelar tertinggi kami ⚡<br>Setara D4/Sarjana Terapan, 4 tahun, 144 SKS. Prospek: Software Engineer, Cyber Security, Cloud Architect!',
+                'pertemuan': 'Ada fitur <strong>Pertemuan Online</strong> 🎥<br>Via Zoom, Google Meet, atau MS Teams. Join langsung dari dasbor!',
+                'google': 'Bisa login pakai Google! 🔐<br>Klik <strong>"Lanjutkan dengan Google"</strong> di halaman <a href="/masuk" class="text-purple-600 underline font-bold">Masuk</a>. Praktis banget!',
             };
-            for (const [k,v] of Object.entries(kb)) { if (q.includes(k)) return v; }
-            return 'Hmm, saya belum punya info spesifik itu 🤔 Coba cek <a href="/program" class="text-blue-500 underline font-bold">Program</a> atau <a href="/gelar" class="text-blue-500 underline font-bold">Gelar</a> kami, atau hubungi admin! 😊';
+            for (const [k, v] of Object.entries(kb)) {
+                if (q.includes(k)) return v;
+            }
+            return 'Hmm, aku belum tahu jawabannya 🤔<br>Coba cek <a href="/program" class="text-purple-600 underline font-bold">Program</a> atau <a href="/gelar" class="text-purple-600 underline font-bold">Gelar</a> kami ya! Atau hubungi admin 😊';
         },
 
         scrollBawah() {
-            this.$nextTick(() => { const k=document.getElementById('kotak-pesan-ai'); if(k) k.scrollTop=k.scrollHeight; });
+            this.$nextTick(() => {
+                const k = document.getElementById('kotak-pesan-ai');
+                if (k) k.scrollTop = k.scrollHeight;
+            });
         },
 
         resetChat() {
-            this.riwayat = [{id:1, dari:'ai', teks:'👋 Chat direset! Ada yang bisa saya bantu? 😊'}];
+            this.riwayat = [{
+                id: Date.now(),
+                dari: 'ai',
+                teks: 'Chat direset! Halo lagi, aku <strong>Gela</strong>! Ada yang bisa aku bantu? 😊'
+            }];
+            this.ekspresi = 1;
+            setTimeout(() => { this.ekspresi = 0; }, 2000);
         }
     }
 }
@@ -556,22 +732,54 @@ function onboardingTour() {
         aktif: true,
         langkahAktif: 0,
         langkah: [
-            { emoji:'🎓', judul:'Selamat Datang di GELAR.ID!', isi:'Platform <strong>Kampus Virtual Indonesia</strong> — raih gelar resmi secara online, dari mana saja!', tip:'💡 Tips: Akun kamu sudah aktif. Yuk jelajahi fiturnya!' },
-            { emoji:'📚', judul:'Pilih Jalurmu', isi:'Ada 2 jalur belajar:<br><strong>🏫 Kelas Pelajar</strong> — untuk SD, SMP, SMA<br><strong>🎓 Kampus Virtual</strong> — setara D1 hingga Sarjana Terapan', tip:'📌 Jalur K1 tersedia GRATIS untuk semua WNI!' },
-            { emoji:'🚀', judul:'Cara Daftar Program', isi:'Pilih program → Klik <strong>Daftar Sekarang</strong> → Ikuti sesi belajar → Selesaikan semua sesi → <strong>Sertifikat terbit otomatis!</strong>', tip:'⏱️ Rata-rata waktu penyelesaian: 3–6 bulan' },
-            { emoji:'🤖', judul:'Ada Asisten AI!', isi:'Klik tombol <strong>bot biru</strong> di pojok kanan bawah kapanpun kamu perlu bantuan. AI kami siap menjawab pertanyaanmu!', tip:'✨ Didukung Google Gemini AI — tanya apa saja!' },
-            { emoji:'🏆', judul:'Dasbor & Sertifikat', isi:'Pantau kemajuan belajar di <strong>Dasbor</strong>. Sertifikat bisa diverifikasi oleh siapapun via kode unik di <strong>/verifikasi</strong>.', tip:'🎉 Selamat bergabung! Kamu siap memulai!' },
+            {
+                judul: 'Selamat Datang di GELAR.ID!',
+                isi: 'Halo! Aku <strong>Gela</strong>, asisten virtualmu di sini 👋<br>Platform <strong>Kampus Virtual Indonesia</strong> — raih gelar resmi secara online, dari mana saja!',
+                tip: 'Akun kamu sudah aktif dan siap digunakan!',
+                ikonTip: '💡'
+            },
+            {
+                judul: 'Dua Jalur Belajar',
+                isi: 'Ada 2 pilihan jalur:<br>🏫 <strong>Kelas Pelajar</strong> — untuk SD, SMP, SMA<br>🎓 <strong>Kampus Virtual</strong> — setara D1 hingga Sarjana Terapan',
+                tip: 'Jalur K1 tersedia GRATIS untuk semua WNI! Tidak ada syarat pendidikan.',
+                ikonTip: '📌'
+            },
+            {
+                judul: 'Cara Mulai Belajar',
+                isi: 'Pilih program → Klik <strong>Daftar Sekarang</strong> → Ikuti sesi belajar → Selesaikan semua sesi → <strong>Sertifikat terbit otomatis!</strong>',
+                tip: 'Rata-rata waktu penyelesaian 3–6 bulan. Bisa belajar kapan saja!',
+                ikonTip: '⏱️'
+            },
+            {
+                judul: 'Aku Selalu Ada Untukmu!',
+                isi: 'Lihat tombol karakter di pojok kanan bawah? Itu aku, <strong>Gela</strong>! 🤖<br>Klik kapanpun kamu butuh bantuan — tanya gelar, harga, cara daftar, apapun!',
+                tip: 'Didukung Google Gemini AI — tanya apa saja, aku akan jawab!',
+                ikonTip: '✨'
+            },
+            {
+                judul: 'Pantau Progres & Sertifikat',
+                isi: 'Di <strong>Dasbor</strong> kamu bisa lihat kemajuan belajar per sesi. Sertifikat bisa diverifikasi siapapun via <strong>/verifikasi</strong>.',
+                tip: 'Selamat bergabung di GELAR.ID! Semangat belajar! 🎉',
+                ikonTip: '🏆'
+            },
         ],
         berikutnya() {
             if (this.langkahAktif < this.langkah.length - 1) {
                 this.langkahAktif++;
-            } else { this.selesai(); }
+            } else {
+                this.selesai();
+            }
         },
-        sebelumnya() { if (this.langkahAktif > 0) this.langkahAktif--; },
+        sebelumnya() {
+            if (this.langkahAktif > 0) this.langkahAktif--;
+        },
         lewati() { this.selesai(); },
         selesai() {
             this.aktif = false;
-            fetch('/onboarding/selesai', { method:'POST', headers:{'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content} });
+            fetch('/onboarding/selesai', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content }
+            });
         }
     }
 }
