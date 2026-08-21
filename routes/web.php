@@ -53,6 +53,10 @@ Route::post('/keluar', [KontrollerMasuk::class, 'keluar'])->name('keluar')->midd
 Route::post('/ai/chat', [KontrollerAI::class, 'chat'])->name('ai.chat');
 Route::post('/onboarding/selesai', [KontrollerAI::class, 'selesaikanOnboarding'])->name('onboarding.selesai');
 
+// ============ BEASISWA PUBLIK ============
+Route::get('/beasiswa', [\App\Http\Controllers\Pengguna\KontrollerBeasiswa::class, 'index'])->name('beasiswa');
+Route::get('/beasiswa/{beasiswa:slug}', [\App\Http\Controllers\Pengguna\KontrollerBeasiswa::class, 'tampil'])->name('beasiswa.tampil');
+
 // ============ PENGGUNA ============
 Route::middleware('auth')->prefix('pengguna')->name('pengguna.')->group(function () {
 
@@ -64,6 +68,14 @@ Route::middleware('auth')->prefix('pengguna')->name('pengguna.')->group(function
     Route::post('/kemajuan/{pendaftaran}/sesi/{sesi}', [KontrollerDasbor::class, 'tandaiSesiSelesai'])->name('sesi.selesai');
     Route::get('/profil', [KontrollerDasbor::class, 'profil'])->name('profil');
     Route::put('/profil', [KontrollerDasbor::class, 'perbaruiProfil'])->name('profil.perbarui');
+
+    // Pencapaian
+    Route::get('/pencapaian-ku', [\App\Http\Controllers\Pengguna\KontrollerPencapaian::class, 'index'])->name('pencapaian-ku');
+    Route::post('/pencapaian/{pencapaian}/ajukan', [\App\Http\Controllers\Pengguna\KontrollerPencapaian::class, 'ajukan'])->name('pencapaian.ajukan');
+
+    // Beasiswa
+    Route::post('/beasiswa/{beasiswa}/daftar', [\App\Http\Controllers\Pengguna\KontrollerBeasiswa::class, 'daftar'])->name('beasiswa.daftar');
+    Route::get('/beasiswa-ku', [\App\Http\Controllers\Pengguna\KontrollerBeasiswa::class, 'riwayat'])->name('beasiswa-ku');
 
     // Persetujuan pendaftaran
     Route::get('/persetujuan/{pendaftaran}', [\App\Http\Controllers\Pengguna\KontrollerPersetujuan::class, 'tampil'])->name('persetujuan');
@@ -165,4 +177,25 @@ Route::middleware(['auth', \App\Http\Middleware\MiddlewareAdmin::class])
     Route::get('/semester/{semester}/sesi/buat', [KontrollerSemester::class, 'buatSesi'])->name('semester.sesi.buat');
     Route::post('/semester/{semester}/sesi', [KontrollerSemester::class, 'simpanSesi'])->name('semester.sesi.simpan');
     Route::delete('/sesi/{sesi}', [KontrollerSemester::class, 'hapusSesi'])->name('sesi.hapus');
+
+    // Pencapaian
+    Route::get('/pencapaian', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'daftar'])->name('pencapaian');
+    Route::get('/pencapaian/buat', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'buat'])->name('pencapaian.buat');
+    Route::post('/pencapaian', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'simpan'])->name('pencapaian.simpan');
+    Route::get('/pencapaian/{pencapaian}/edit', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'edit'])->name('pencapaian.edit');
+    Route::put('/pencapaian/{pencapaian}', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'perbarui'])->name('pencapaian.perbarui');
+    Route::delete('/pencapaian/{pencapaian}', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'hapus'])->name('pencapaian.hapus');
+    Route::get('/pencapaian-klaim', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'klaim'])->name('pencapaian.klaim');
+    Route::post('/pencapaian-klaim/{klaimPencapaian}/verifikasi', [\App\Http\Controllers\Admin\KontrollerPencapaian::class, 'verifikasi'])->name('pencapaian.verifikasi');
+
+    // Beasiswa
+    Route::get('/beasiswa', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'daftar'])->name('beasiswa');
+    Route::get('/beasiswa/buat', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'buat'])->name('beasiswa.buat');
+    Route::post('/beasiswa', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'simpan'])->name('beasiswa.simpan');
+    Route::get('/beasiswa/{beasiswa}/edit', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'edit'])->name('beasiswa.edit');
+    Route::put('/beasiswa/{beasiswa}', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'perbarui'])->name('beasiswa.perbarui');
+    Route::delete('/beasiswa/{beasiswa}', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'hapus'])->name('beasiswa.hapus');
+    Route::get('/beasiswa/{beasiswa}/pendaftar', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'pendaftar'])->name('beasiswa.pendaftar');
+    Route::get('/beasiswa/pendaftar/{pendaftarBeasiswa}', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'detailPendaftar'])->name('beasiswa.pendaftar.detail');
+    Route::post('/beasiswa/pendaftar/{pendaftarBeasiswa}/verifikasi', [\App\Http\Controllers\Admin\KontrollerBeasiswa::class, 'prosesVerifikasi'])->name('beasiswa.pendaftar.verifikasi');
 });

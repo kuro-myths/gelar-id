@@ -98,5 +98,73 @@
             </div>
         </div>
     </div>
+
+    {{-- Panel Pencapaian + Beasiswa --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        {{-- Pencapaian terbaru --}}
+        <div class="kartu-komik overflow-hidden">
+            <div class="px-5 py-4 bg-[#7209b7] flex items-center justify-between">
+                <h3 class="judul-komik text-xl text-white">🏆 PENCAPAIANKU</h3>
+                <a href="/pengguna/pencapaian-ku" data-tautan-spa class="text-yellow-300 font-black text-sm hover:underline">Lihat semua →</a>
+            </div>
+            @php
+            $pencapaianDiraih = auth()->user()->pencapaianDiraih()->with('pencapaian')->latest('diraih_pada')->take(4)->get();
+            @endphp
+            @if($pencapaianDiraih->isEmpty())
+            <div class="p-8 text-center">
+                <div class="text-4xl mb-2">🎯</div>
+                <p class="font-black text-gray-500 text-sm">Belum ada pencapaian</p>
+                <a href="/pengguna/pencapaian-ku" data-tautan-spa class="btn-komik mt-3 inline-flex px-4 py-2 bg-[#7209b7] text-white rounded-xl text-xs">
+                    Lihat Semua Achievement
+                </a>
+            </div>
+            @else
+            <div class="p-4 grid grid-cols-2 gap-3">
+                @foreach($pencapaianDiraih as $pp)
+                <div class="flex items-center gap-2 bg-[#f0f4ff] border-2 border-[#e0e7ff] rounded-xl px-3 py-2">
+                    <span class="text-xl">{{ $pp->pencapaian->ikon }}</span>
+                    <span class="text-xs font-black text-[#0f0e17] leading-tight">{{ Str::limit($pp->pencapaian->nama,20) }}</span>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+
+        {{-- Beasiswa --}}
+        <div class="kartu-komik overflow-hidden">
+            <div class="px-5 py-4 bg-[#06d6a0] flex items-center justify-between">
+                <h3 class="judul-komik text-xl text-[#0f0e17]">🎓 BEASISWAKU</h3>
+                <a href="/beasiswa" data-tautan-spa class="text-[#0f0e17] font-black text-sm hover:underline">Lihat program →</a>
+            </div>
+            @php
+            $pendaftaranBeasiswaSaya = auth()->user()->pendaftaranBeasiswa()->with('beasiswa')->latest()->take(3)->get();
+            @endphp
+            @if($pendaftaranBeasiswaSaya->isEmpty())
+            <div class="p-8 text-center">
+                <div class="text-4xl mb-2">🎁</div>
+                <p class="font-black text-gray-500 text-sm">Belum mendaftar beasiswa</p>
+                <a href="/beasiswa" data-tautan-spa class="btn-komik mt-3 inline-flex px-4 py-2 bg-[#06d6a0] text-[#0f0e17] rounded-xl text-xs">
+                    Cari Beasiswa Gratis
+                </a>
+            </div>
+            @else
+            <div class="p-4 space-y-2">
+                @foreach($pendaftaranBeasiswaSaya as $pb)
+                <div class="flex items-center justify-between bg-[#f0f4ff] border-2 border-[#e0e7ff] rounded-xl px-3 py-2">
+                    <div>
+                        <p class="text-xs font-black text-[#0f0e17]">{{ Str::limit($pb->beasiswa->nama,28) }}</p>
+                    </div>
+                    <span class="badge-komik text-xs"
+                          style="background:{{ $pb->warna_status }}22;border-color:{{ $pb->warna_status }};color:{{ $pb->warna_status }};">
+                        {{ $pb->label_status }}
+                    </span>
+                </div>
+                @endforeach
+                <a href="/pengguna/beasiswa-ku" data-tautan-spa class="text-xs font-black text-[#4361ee] hover:underline">Lihat semua →</a>
+            </div>
+            @endif
+        </div>
+    </div>
 </div>
 @endsection
+

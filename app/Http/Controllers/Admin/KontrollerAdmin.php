@@ -11,7 +11,11 @@ use App\Models\Sertifikat;
 use App\Models\Pertemuan;
 use App\Models\Kuesioner;
 use App\Models\Diskon;
+use App\Models\Pencapaian;
+use App\Models\PencapaianPengguna;
+use App\Mail\PendaftaranDiterima;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class KontrollerAdmin extends Controller
@@ -228,11 +232,8 @@ class KontrollerAdmin extends Controller
         $pendaftaran->update(['status' => $request->status]);
 
         if ($request->status === 'selesai' && $statusLama !== 'selesai' && !$pendaftaran->sertifikat) {
-            // Hitung IPK dari kemajuan akademik
-            $nilaiRata = $pendaftaran->kemajuanAkademik()
-                ->whereNotNull('nilai')->avg('nilai');
-
-            $predikat = 'Memuaskan';
+            $nilaiRata = $pendaftaran->kemajuanAkademik()->whereNotNull('nilai')->avg('nilai');
+            $predikat  = 'Memuaskan';
             if ($nilaiRata >= 90) $predikat = 'Dengan Pujian (Cumlaude)';
             elseif ($nilaiRata >= 80) $predikat = 'Sangat Memuaskan';
 
@@ -247,9 +248,48 @@ class KontrollerAdmin extends Controller
                 'ipk'             => $nilaiRata ? round($nilaiRata / 25, 2) : 3.00,
                 'predikat'        => $predikat,
             ]);
+
+            // Cek pencapaian "Lulus Program"
+            $this->cekDanBeriPencapaian($pendaftaran->pengguna_id, 'selesai_program');
+        }
+
+        // Kirim email notifikasi saat status berubah menjadi aktif
+        if ($request->status === 'aktif' && $statusLama !== 'aktif') {
+            try {
+                $pendaftaran->load('pengguna', 'program.jenisGelar');
+                Mail::to($pendaftaran->pengguna->email)->send(new PendaftaranDiterima($pendaftaran));
+            } catch (\Exception $e) {
+                \Log::warning('Gagal kirim email pendaftaran: ' . $e->getMessage());
+            }
         }
 
         return back()->with('sukses', 'Status pendaftaran diperbarui.');
+    }
+
+    /**
+     * Cek dan beri pencapaian otomatis ke pengguna berdasarkan trigger
+     */
+    private function cekDanBeriPencapaian(int $penggunaId, string $triggerTipe): void
+    {
+        $pencapaian = Pencapaian::where('tipe_syarat', 'otomatis')
+            ->where('aktif', true)
+            ->whereJsonContains('syarat->tipe', $triggerTipe)
+            ->get();
+
+        foreach ($pencapaian as $p) {
+            $sudahAda = PencapaianPengguna::where('pengguna_id', $penggunaId)
+                ->where('pencapaian_id', $p->id)->exists();
+            if (!$sudahAda) {
+                PencapaianPengguna::create([
+                    'pengguna_id'       => $penggunaId,
+                    'pencapaian_id'     => $p->id,
+                    'status'            => 'diverifikasi',
+                    'diverifikasi_oleh' => auth()->id(),
+                    'diverifikasi_pada' => now(),
+                    'diraih_pada'       => now(),
+                ]);
+            }
+        }
     }
 
     // ===== SERTIFIKAT =====

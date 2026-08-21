@@ -66,43 +66,24 @@
                 </div>
             </div>
 
-            {{-- Kartu Statistik + Maskot --}}
-            <div id="hero-statistik" class="relative">
-                {{-- Karakter fullbody di belakang kartu --}}
-                <div class="absolute inset-0 flex items-end justify-center pointer-events-none z-0"
-                     style="bottom:-20px;">
-                    <img src="/gambar/karakter-fullbody.png"
-                         alt="Gela — Maskot GELAR.ID"
-                         id="maskot-hero"
-                         class="h-80 lg:h-96 object-contain object-bottom"
-                         style="filter:drop-shadow(0 0 30px rgba(114,9,183,.35)) drop-shadow(0 20px 40px rgba(0,0,0,.3));"
-                         draggable="false">
+            {{-- Kartu Statistik --}}
+            <div id="hero-statistik" class="grid grid-cols-2 gap-4">
+                @php
+                $statItems = [
+                    ['nilai'=>$statistik['pengguna'],'label'=>'Mahasiswa Aktif','ikon'=>'users','bg'=>'bg-[#f72585]','teks'=>'text-white'],
+                    ['nilai'=>$statistik['program'],'label'=>'Program Studi','ikon'=>'book-open','bg'=>'bg-[#06d6a0]','teks'=>'text-[#0f0e17]'],
+                    ['nilai'=>$statistik['sertifikat'],'label'=>'Sertifikat Terbit','ikon'=>'award','bg'=>'bg-[#ffd60a]','teks'=>'text-[#0f0e17]'],
+                    ['nilai'=>$statistik['gelar'],'label'=>'Jenis Gelar','ikon'=>'graduation-cap','bg'=>'bg-white/20','teks'=>'text-white'],
+                ];
+                @endphp
+                @foreach($statItems as $i => $s)
+                <div class="kartu-komik p-6 {{ $s['bg'] }} {{ $s['teks'] }} stat-kartu"
+                     style="animation-delay:{{ $i*0.1 }}s">
+                    <i data-lucide="{{ $s['ikon'] }}" class="w-8 h-8 mb-3 opacity-80"></i>
+                    <div class="judul-komik text-5xl angka-hitung" data-hitung="{{ $s['nilai'] }}">0</div>
+                    <div class="text-sm font-black mt-1 opacity-80">{{ $s['label'] }}</div>
                 </div>
-                {{-- Kartu statistik --}}
-                <div class="grid grid-cols-2 gap-3 relative z-10">
-                    @php
-                    $statItems = [
-                        ['nilai'=>$statistik['pengguna'],'label'=>'Mahasiswa Aktif','ikon'=>'users','bg'=>'bg-[#f72585]','teks'=>'text-white'],
-                        ['nilai'=>$statistik['program'],'label'=>'Program Studi','ikon'=>'book-open','bg'=>'bg-[#06d6a0]','teks'=>'text-[#0f0e17]'],
-                        ['nilai'=>$statistik['sertifikat'],'label'=>'Sertifikat Terbit','ikon'=>'award','bg'=>'bg-[#ffd60a]','teks'=>'text-[#0f0e17]'],
-                        ['nilai'=>$statistik['gelar'],'label'=>'Jenis Gelar','ikon'=>'graduation-cap','bg'=>'bg-white/20','teks'=>'text-white'],
-                    ];
-                    @endphp
-                    @foreach($statItems as $i => $s)
-                    <div class="kartu-komik p-5 {{ $s['bg'] }} {{ $s['teks'] }} stat-kartu backdrop-blur-sm"
-                         style="animation-delay:{{ $i*0.1 }}s">
-                        <i data-lucide="{{ $s['ikon'] }}" class="w-7 h-7 mb-2 opacity-80"></i>
-                        <div class="judul-komik text-4xl angka-hitung" data-hitung="{{ $s['nilai'] }}">0</div>
-                        <div class="text-xs font-black mt-1 opacity-80">{{ $s['label'] }}</div>
-                    </div>
-                    @endforeach
-                </div>
-                {{-- Label nama karakter --}}
-                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-                    <div class="bg-[#7209b7] text-white text-xs font-black px-3 py-1 rounded-full border-2 border-[#0f0e17] shadow-[2px_2px_0_#0f0e17] whitespace-nowrap">
-                        ✨ GELA — Asisten AI GELAR.ID
-                    </div>
-                </div>
+                @endforeach
             </div>
         </div>
 
@@ -352,41 +333,26 @@
     </div>
 </section>
 
-{{-- ===== CTA AKHIR dengan Maskot ===== --}}
+{{-- ===== CTA AKHIR ===== --}}
 <section class="halftone py-20 relative overflow-hidden">
-    <div class="max-w-4xl mx-auto px-4 relative z-10 akan-muncul">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
-            {{-- Karakter --}}
-            <div class="flex justify-center md:justify-end order-2 md:order-1">
-                <img src="/gambar/karakter-fullbody.png"
-                     alt="Gela mengundang bergabung"
-                     class="h-64 md:h-80 object-contain object-bottom"
-                     style="filter:drop-shadow(0 0 20px rgba(255,255,255,.2));"
-                     draggable="false">
-            </div>
-            {{-- Teks & CTA --}}
-            <div class="text-center md:text-left order-1 md:order-2">
-                <div class="inline-flex items-center gap-2 bg-white/15 border border-white/25 rounded-full px-4 py-2 text-white text-sm font-bold mb-4">
-                    <span class="text-lg">✨</span> Gela siap menemanimu!
-                </div>
-                <h2 class="judul-komik text-5xl md:text-6xl text-white mb-4" style="text-shadow:4px 4px 0 rgba(0,0,0,.3);">
-                    SIAP MULAI?
-                </h2>
-                <p class="text-blue-100 font-bold text-lg mb-8 leading-relaxed">
-                    Bergabung dengan ribuan mahasiswa virtual Indonesia!<br>
-                    <span class="text-[#ffd60a] font-black">Gratis untuk mulai — daftar sekarang!</span>
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                    <a href="/daftar" data-tautan-spa class="btn-komik px-8 py-4 bg-[#ffd60a] text-[#0f0e17] rounded-2xl text-lg">
-                        <i data-lucide="rocket" class="w-5 h-5"></i>
-                        Daftar Sekarang — GRATIS!
-                    </a>
-                    <a href="/verifikasi" data-tautan-spa class="btn-komik px-6 py-4 bg-white/10 border-white/30 text-white rounded-2xl text-base hover:bg-white/20">
-                        <i data-lucide="shield-check" class="w-5 h-5"></i>
-                        Verifikasi Sertifikat
-                    </a>
-                </div>
-            </div>
+    <div class="max-w-4xl mx-auto px-4 text-center relative z-10 akan-muncul">
+        <div class="text-7xl mb-4 animate-bounce inline-block">🎓</div>
+        <h2 class="judul-komik text-6xl md:text-7xl text-white mb-4" style="text-shadow:4px 4px 0 rgba(0,0,0,0.3);">
+            SIAP MULAI?
+        </h2>
+        <p class="text-blue-100 font-bold text-xl mb-8">
+            Bergabung dengan ribuan mahasiswa virtual Indonesia!<br>
+            <span class="text-[#ffd60a] font-black">Gratis untuk mulai — daftar sekarang!</span>
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/daftar" data-tautan-spa class="btn-komik px-10 py-4 bg-[#ffd60a] text-[#0f0e17] rounded-2xl text-xl">
+                <i data-lucide="rocket" class="w-6 h-6"></i>
+                Daftar Sekarang — GRATIS!
+            </a>
+            <a href="/verifikasi" data-tautan-spa class="btn-komik px-8 py-4 bg-white/10 border-white/30 text-white rounded-2xl text-lg hover:bg-white/20">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                Verifikasi Sertifikat
+            </a>
         </div>
     </div>
     <div class="absolute -bottom-8 -right-8 w-48 h-48 rounded-full opacity-20" style="background:radial-gradient(circle,#ffd60a,transparent)"></div>
@@ -431,19 +397,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const y = (e.clientY / window.innerHeight - 0.5) * 30;
         gsap.to('#lingkaran-1', { x: x, y: y, duration: 1, ease: 'power1.out' });
         gsap.to('#lingkaran-2', { x: -x * 0.5, y: -y * 0.5, duration: 1.2, ease: 'power1.out' });
-        // Parallax maskot
-        gsap.to('#maskot-hero', { x: x * 0.4, y: y * 0.2, duration: 1.5, ease: 'power1.out' });
-    });
-
-    // Animasi masuk maskot
-    gsap.fromTo('#maskot-hero',
-        { opacity: 0, scale: 0.85, y: 40 },
-        { opacity: 1, scale: 1, y: 0, duration: 1, delay: 0.8, ease: 'back.out(1.4)' }
-    );
-    // Animasi mengambang
-    gsap.to('#maskot-hero', {
-        y: -12, duration: 2.5, ease: 'power1.inOut',
-        yoyo: true, repeat: -1, delay: 1.8
     });
 });
 </script>

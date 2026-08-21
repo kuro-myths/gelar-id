@@ -168,6 +168,9 @@
                 <a href="/verifikasi" data-tautan-spa class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-sm text-[#0f0e17] hover:bg-[#4361ee] hover:text-white transition-all duration-200">
                     <i data-lucide="shield-check" class="w-4 h-4"></i> Verifikasi
                 </a>
+                <a href="/beasiswa" data-tautan-spa class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-sm text-[#0f0e17] hover:bg-[#06d6a0] hover:text-[#0f0e17] transition-all duration-200">
+                    <i data-lucide="gift" class="w-4 h-4"></i> Beasiswa
+                </a>
                 <a href="/analisis-minat" data-tautan-spa class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-sm text-[#0f0e17] hover:bg-[#ffd60a] hover:text-[#0f0e17] transition-all duration-200">
                     <i data-lucide="sparkles" class="w-4 h-4"></i> Tes Minat
                 </a>
@@ -190,7 +193,9 @@
                         <a href="/pengguna/profil" data-tautan-spa><i data-lucide="user" class="w-4 h-4 text-[#06d6a0]"></i> Profil Saya</a>
                         <a href="/pengguna/daftar-ku" data-tautan-spa><i data-lucide="bookmark" class="w-4 h-4 text-[#f72585]"></i> Daftar-ku</a>
                         <a href="/pengguna/sertifikat-ku" data-tautan-spa><i data-lucide="award" class="w-4 h-4 text-[#ffd60a]"></i> Sertifikat-ku</a>
-                        <a href="/pengguna/pertemuan" data-tautan-spa><i data-lucide="video" class="w-4 h-4 text-[#7209b7]"></i> Pertemuan</a>
+                        <a href="/pengguna/pencapaian-ku" data-tautan-spa><i data-lucide="trophy" class="w-4 h-4 text-[#7209b7]"></i> Pencapaianku</a>
+                        <a href="/pengguna/beasiswa-ku" data-tautan-spa><i data-lucide="gift" class="w-4 h-4 text-[#06d6a0]"></i> Beasiswa-ku</a>
+                        <a href="/pengguna/pertemuan" data-tautan-spa><i data-lucide="video" class="w-4 h-4 text-[#4361ee]"></i> Pertemuan</a>
                         @endif
                         <div class="border-t-2 border-dashed border-gray-200 my-1.5"></div>
                         <form method="POST" action="/keluar">
@@ -357,16 +362,17 @@
          x-transition:leave-end="opacity-0 scale-90 translate-y-4"
          class="gelembung-ai mb-3" x-cloak>
 
-        {{-- Header dengan karakter --}}
+        {{-- Header dengan ikon AI --}}
         <div class="flex items-center justify-between px-4 py-3"
              style="background:linear-gradient(135deg,#7209b7 0%,#4361ee 100%);">
             <div class="flex items-center gap-3">
-                {{-- Wajah karakter dengan ekspresi dinamis --}}
-                <div class="karakter-ai-wajah" :class="'ekspresi-' + ekspresi">
-                    <img src="/gambar/karakter-ekspresi.png" alt="Asisten AI" draggable="false">
+                {{-- Avatar AI animasi --}}
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border-2 border-white/30"
+                     style="background:rgba(255,255,255,.15);">
+                    <span class="text-xl" x-text="['🤖','✨','💡','👆'][ekspresi]"></span>
                 </div>
                 <div>
-                    <p class="judul-komik text-xl text-white leading-none tracking-wide">GELA</p>
+                    <p class="judul-komik text-xl text-white leading-none tracking-wide">GELA AI</p>
                     <p class="text-purple-200 text-xs font-bold" x-text="statusTeks"></p>
                 </div>
             </div>
@@ -388,10 +394,9 @@
                 <div :class="pesan.dari === 'ai' ? 'flex justify-start items-end gap-2' : 'flex justify-end'">
                     {{-- Avatar mini untuk pesan AI --}}
                     <div x-show="pesan.dari === 'ai'"
-                         class="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#7209b7]"
-                         style="background:#f0f4ff;">
-                        <img src="/gambar/karakter-ekspresi.png" alt="AI"
-                             class="w-[400%] h-full object-cover" style="margin-left:0">
+                         class="w-7 h-7 rounded-full flex-shrink-0 border-2 border-[#7209b7] flex items-center justify-center text-sm"
+                         style="background:#ede9fe;">
+                        🤖
                     </div>
                     <div :class="pesan.dari === 'ai' ? 'pesan-ai-masuk' : 'pesan-ai-keluar'"
                          x-html="pesan.teks"></div>
@@ -399,10 +404,9 @@
             </template>
             {{-- Typing indicator --}}
             <div x-show="mengetik" class="flex justify-start items-end gap-2">
-                <div class="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#7209b7]"
-                     style="background:#f0f4ff;">
-                    <img src="/gambar/karakter-ekspresi.png" alt="AI"
-                         class="w-[400%] h-full object-cover" style="margin-left:0">
+                <div class="w-7 h-7 rounded-full flex-shrink-0 border-2 border-[#7209b7] flex items-center justify-center text-sm"
+                     style="background:#ede9fe;">
+                    💡
                 </div>
                 <div class="pesan-ai-masuk flex items-center gap-1.5">
                     <span class="w-2 h-2 bg-[#7209b7] rounded-full animate-bounce"></span>
@@ -428,7 +432,7 @@
                    @keyup.enter="kirim(input)"
                    @focus="ekspresi=3"
                    @blur="ekspresi=0"
-                   placeholder="Tanya Gela sesuatu..."
+                   placeholder="Tanya Gela AI sesuatu..."
                    class="flex-1 text-xs px-3 py-2 rounded-xl border-2 border-[#0f0e17] focus:outline-none focus:border-[#7209b7] font-semibold">
             <button @click="kirim(input)" :disabled="mengetik"
                     class="btn-komik px-3 py-2 rounded-xl text-xs text-white"
@@ -438,108 +442,64 @@
         </div>
     </div>
 
-    {{-- Tombol toggle dengan karakter --}}
-    <div class="tombol-karakter ml-auto" @click="terbuka = !terbuka">
-        <div class="tombol-karakter-inner" x-show="!terbuka">
-            <img src="/gambar/karakter-ekspresi.png" alt="Gela AI"
-                 style="width:400%;height:100%;object-fit:cover;object-position:0 0;"
-                 draggable="false">
-        </div>
-        <div class="tombol-karakter-inner flex items-center justify-center" x-show="terbuka" x-cloak>
-            <i data-lucide="x" class="w-7 h-7 text-white"></i>
-        </div>
-        <span class="notif-dot"></span>
-    </div>
+    {{-- Tombol toggle --}}
+    <button @click="terbuka = !terbuka"
+            class="btn-komik w-14 h-14 rounded-2xl text-white flex items-center justify-center relative ml-auto"
+            style="background:linear-gradient(135deg,#7209b7,#4361ee)">
+        <i data-lucide="bot" class="w-7 h-7" x-show="!terbuka"></i>
+        <i data-lucide="x" class="w-6 h-6" x-show="terbuka" x-cloak></i>
+        <span class="absolute -top-1 -right-1 w-4 h-4 bg-[#f72585] rounded-full border-2 border-white animate-pulse"></span>
+    </button>
 </div>
 
-{{-- ===== ONBOARDING TOUR (dengan Karakter Fullbody) ===== --}}
+{{-- ===== ONBOARDING TOUR ===== --}}
 @auth
 @if(!session('onboarding_selesai') && !auth()->user()->isAdmin())
 <div id="onboarding-overlay" x-data="onboardingTour()" x-show="aktif" x-cloak>
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="onboarding-kartu relative overflow-visible">
-            <div class="flex flex-col md:flex-row">
+        <div class="onboarding-kartu p-8 relative">
+            {{-- Progress bar --}}
+            <div class="flex gap-1.5 mb-6">
+                <template x-for="(l,i) in langkah" :key="i">
+                    <div class="h-1.5 rounded-full flex-1 transition-all duration-500"
+                         :class="i <= langkahAktif ? 'bg-[#7209b7]' : 'bg-gray-200'"></div>
+                </template>
+            </div>
 
-                {{-- Sisi kiri: karakter fullbody --}}
-                <div class="hidden md:flex flex-col items-center justify-end w-48 flex-shrink-0 relative"
-                     style="background:linear-gradient(180deg,#7209b722 0%,#4361ee22 100%);border-radius:24px 0 0 24px;border-right:3px solid #0f0e17;min-height:500px;">
-                    <img src="/gambar/karakter-fullbody.png"
-                         alt="Gela — Asisten GELAR.ID"
-                         class="w-full object-contain object-bottom"
-                         style="max-height:420px;filter:drop-shadow(0 0 20px #7209b755);">
-                    <div class="absolute top-4 left-0 right-0 text-center">
-                        <span class="judul-komik text-xl text-[#7209b7] tracking-widest">GELA</span>
-                        <p class="text-xs font-black text-gray-500">Asisten GELAR.ID</p>
+            {{-- Konten per langkah --}}
+            <template x-for="(l,i) in langkah" :key="i">
+                <div x-show="langkahAktif === i"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-x-4"
+                     x-transition:enter-end="opacity-100 translate-x-0">
+                    <div class="text-5xl mb-4 text-center" x-text="l.ikonTip + ' ' + (l.emoji || '')"></div>
+                    <div class="inline-flex items-center gap-2 mb-3">
+                        <span class="w-7 h-7 rounded-full bg-[#7209b7] text-white text-xs font-black flex items-center justify-center border-2 border-[#0f0e17]"
+                              x-text="i+1"></span>
+                        <span class="text-xs font-black text-gray-400 uppercase tracking-wider"
+                              x-text="'Langkah ' + (i+1) + ' dari ' + langkah.length"></span>
+                    </div>
+                    <h3 class="judul-komik text-3xl text-[#0f0e17] mb-3" x-text="l.judul"></h3>
+                    <p class="text-gray-600 font-semibold leading-relaxed text-sm mb-5" x-html="l.isi"></p>
+                    <div class="bg-[#f0f4ff] rounded-2xl px-4 py-3 border-2 border-[#e0e7ff] mb-6 flex items-start gap-2">
+                        <span class="text-lg mt-0.5" x-text="l.ikonTip"></span>
+                        <span class="text-xs font-bold text-[#4361ee] leading-relaxed" x-text="l.tip"></span>
                     </div>
                 </div>
+            </template>
 
-                {{-- Sisi kanan: konten tour --}}
-                <div class="flex-1 p-7 md:p-8">
-                    {{-- Header mobile: wajah mini --}}
-                    <div class="flex items-center gap-3 mb-5 md:hidden">
-                        <div class="karakter-ai-wajah ekspresi-1" style="width:52px;height:52px;">
-                            <img src="/gambar/karakter-ekspresi.png" alt="Gela">
-                        </div>
-                        <div>
-                            <p class="judul-komik text-xl text-[#7209b7]">GELA</p>
-                            <p class="text-xs font-black text-gray-500">Asisten GELAR.ID</p>
-                        </div>
-                    </div>
-
-                    {{-- Progress bar --}}
-                    <div class="flex gap-1.5 mb-6">
-                        <template x-for="(l,i) in langkah" :key="i">
-                            <div class="h-1.5 rounded-full flex-1 transition-all duration-500"
-                                 :class="i <= langkahAktif ? 'bg-[#7209b7]' : 'bg-gray-200'"></div>
-                        </template>
-                    </div>
-
-                    {{-- Konten per langkah --}}
-                    <template x-for="(l,i) in langkah" :key="i">
-                        <div x-show="langkahAktif === i"
-                             x-transition:enter="transition ease-out duration-300"
-                             x-transition:enter-start="opacity-0 translate-x-4"
-                             x-transition:enter-end="opacity-100 translate-x-0">
-
-                            {{-- Nomor langkah --}}
-                            <div class="inline-flex items-center gap-2 mb-3">
-                                <span class="w-7 h-7 rounded-full bg-[#7209b7] text-white text-xs font-black flex items-center justify-center border-2 border-[#0f0e17]"
-                                      x-text="i+1"></span>
-                                <span class="text-xs font-black text-gray-400 uppercase tracking-wider"
-                                      x-text="'Langkah ' + (i+1) + ' dari ' + langkah.length"></span>
-                            </div>
-
-                            <h3 class="judul-komik text-3xl text-[#0f0e17] mb-3" x-text="l.judul"></h3>
-                            <p class="text-gray-600 font-semibold leading-relaxed text-sm mb-5" x-html="l.isi"></p>
-
-                            {{-- Tip box --}}
-                            <div class="bg-[#f0f4ff] rounded-2xl px-4 py-3 border-2 border-[#e0e7ff] mb-6 flex items-start gap-2">
-                                <span class="text-lg mt-0.5" x-text="l.ikonTip"></span>
-                                <span class="text-xs font-bold text-[#4361ee] leading-relaxed" x-text="l.tip"></span>
-                            </div>
-                        </div>
-                    </template>
-
-                    {{-- Navigasi --}}
-                    <div class="flex items-center justify-between pt-2 border-t-2 border-gray-100">
-                        <button @click="sebelumnya()"
-                                x-show="langkahAktif > 0"
-                                class="btn-komik px-4 py-2.5 bg-gray-100 text-[#0f0e17] rounded-xl text-sm">
-                            ← Kembali
-                        </button>
-                        <div x-show="langkahAktif === 0"></div>
-                        <div class="flex gap-2">
-                            <button @click="lewati()"
-                                    class="text-sm font-bold text-gray-400 hover:text-gray-600 px-3 py-2 transition-colors">
-                                Lewati
-                            </button>
-                            <button @click="berikutnya()"
-                                    class="btn-komik px-6 py-2.5 text-white rounded-xl text-sm"
-                                    style="background:linear-gradient(135deg,#7209b7,#4361ee)"
-                                    x-text="langkahAktif === langkah.length-1 ? '🚀 Mulai Belajar!' : 'Lanjut →'">
-                            </button>
-                        </div>
-                    </div>
+            {{-- Navigasi --}}
+            <div class="flex items-center justify-between pt-2 border-t-2 border-gray-100">
+                <button @click="sebelumnya()" x-show="langkahAktif > 0"
+                        class="btn-komik px-4 py-2.5 bg-gray-100 text-[#0f0e17] rounded-xl text-sm">← Kembali</button>
+                <div x-show="langkahAktif === 0"></div>
+                <div class="flex gap-2">
+                    <button @click="lewati()" class="text-sm font-bold text-gray-400 hover:text-gray-600 px-3 py-2">Lewati</button>
+                    <button @click="berikutnya()"
+                            class="btn-komik px-6 py-2.5 text-white rounded-xl text-sm"
+                            style="background:linear-gradient(135deg,#7209b7,#4361ee)"
+                            x-text="langkahAktif === langkah.length-1 ? '🚀 Mulai Belajar!' : 'Lanjut →'">
+                    </button>
                 </div>
             </div>
         </div>

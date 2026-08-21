@@ -15,6 +15,8 @@ class Pengguna extends Authenticatable
     protected $fillable = [
         'nama', 'email', 'nama_pengguna', 'nim', 'password',
         'peran', 'avatar', 'telepon', 'alamat', 'institusi', 'aktif',
+        'keahlian', 'bio', 'linkedin', 'github',
+        'tampilkan_profil', 'rating', 'total_pelajar',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -56,6 +58,22 @@ class Pengguna extends Authenticatable
     public function isPengajar(): bool
     {
         return $this->peran === 'pengajar';
+    }
+
+    public function pencapaian()
+    {
+        return $this->hasMany(\App\Models\PencapaianPengguna::class, 'pengguna_id');
+    }
+
+    public function pencapaianDiraih()
+    {
+        return $this->hasMany(\App\Models\PencapaianPengguna::class, 'pengguna_id')
+                    ->where('status', 'diverifikasi');
+    }
+
+    public function pendaftaranBeasiswa()
+    {
+        return $this->hasMany(\App\Models\PendaftarBeasiswa::class, 'pengguna_id');
     }
 
 }

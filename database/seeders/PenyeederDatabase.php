@@ -14,6 +14,8 @@ class PenyeederDatabase extends Seeder
             PenyeederPengguna::class,
             PenyeederKelas::class,
             PenyeederSemester::class,
+            PenyeederPencapaian::class,
+            PenyeederBeasiswa::class,
         ]);
     }
 }

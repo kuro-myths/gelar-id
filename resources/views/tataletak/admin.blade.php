@@ -93,6 +93,22 @@
             <i data-lucide="users" class="w-4 h-4"></i> Pengguna
         </a>
 
+        <p class="text-gray-600 text-xs font-black px-3 pt-3 pb-1 uppercase tracking-widest">🏆 Gamifikasi</p>
+        <a href="/admin/pencapaian" class="sidebar-link {{ request()->is('admin/pencapaian*') ? 'aktif' : '' }}">
+            <i data-lucide="trophy" class="w-4 h-4"></i> Pencapaian
+            @php $jmlKlaim = \App\Models\PencapaianPengguna::where('status','menunggu')->count(); @endphp
+            @if($jmlKlaim > 0)
+            <span class="ml-auto bg-[#f72585] text-white text-xs font-black px-1.5 py-0.5 rounded-full">{{ $jmlKlaim }}</span>
+            @endif
+        </a>
+        <a href="/admin/beasiswa" class="sidebar-link {{ request()->is('admin/beasiswa*') ? 'aktif' : '' }}">
+            <i data-lucide="gift" class="w-4 h-4"></i> Beasiswa
+            @php $jmlBeasiswaMenunggu = \App\Models\PendaftarBeasiswa::where('status','menunggu')->count(); @endphp
+            @if($jmlBeasiswaMenunggu > 0)
+            <span class="ml-auto bg-[#ffd60a] text-[#0f0e17] text-xs font-black px-1.5 py-0.5 rounded-full">{{ $jmlBeasiswaMenunggu }}</span>
+            @endif
+        </a>
+
         <p class="text-gray-600 text-xs font-black px-3 pt-3 pb-1 uppercase tracking-widest">🤖 AI Tool</p>
         <a href="/analisis-minat" target="_blank" class="sidebar-link">
             <i data-lucide="bot" class="w-4 h-4"></i> Tes Minat AI
